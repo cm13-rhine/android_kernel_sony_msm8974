@@ -48,7 +48,6 @@
 #include "modem_notifier.h"
 #include "platsmp.h"
 
-
 static struct memtype_reserve msm8974_reserve_table[] __initdata = {
 	[MEMTYPE_SMI] = {
 	},
@@ -72,6 +71,9 @@ static struct reserve_info msm8974_reserve_info __initdata = {
 
 void __init msm_8974_reserve(void)
 {
+#ifdef CONFIG_ANDROID_PERSISTENT_RAM
+	reserve_persistent_ram();
+#endif
 	reserve_info = &msm8974_reserve_info;
 	of_scan_flat_dt(dt_scan_for_memory_reserve, msm8974_reserve_table);
 	msm_reserve();
