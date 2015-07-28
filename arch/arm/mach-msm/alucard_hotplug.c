@@ -63,11 +63,7 @@ static struct hotplug_tuners {
 	bool force_cpu_up;
 } hotplug_tuners_ins = {
 	.hotplug_sampling_rate = 30,
-#ifdef CONFIG_MACH_JF
-	.hotplug_enable = 1,
-#else
 	.hotplug_enable = 0,
-#endif
 	.min_cpus_online = 1,
 	.maxcoreslimit = NR_CPUS,
 	.maxcoreslimit_sleep = 3,
@@ -268,14 +264,7 @@ static void __ref hotplug_work_fn(struct work_struct *work)
 					 || rq_avg_calc == false)) {
 					if (pcpu_info->cur_up_rate %
 							pcpu_info->up_rate == 0) {
-	#if 0
-						pr_info("CPU[%u], UPCPU[%u], \
-							cur_freq[%u], cur_load[%u], \
-							rq_avg[%u], up_rate[%u]\n",
-							cpu, upcpu, cur_freq,
-							cur_load, rq_avg,
-							pcpu_info->cur_up_rate);
-	#endif
+
 						ret = cpu_up(upcpu);
 						if (!ret) {
 							pcpu_info->cur_up_rate = 1;
@@ -295,17 +284,7 @@ static void __ref hotplug_work_fn(struct work_struct *work)
 						 || rq_avg_calc == false)))) {
 						if (pcpu_info->cur_down_rate %
 								pcpu_info->down_rate == 0) {
-	#if 0
-							pr_info("CPU[%u], \
-								cur_freq[%u], \
-								cur_load[%u], \
-								rq_avg[%u], \
-								down_rate[%u]\n",
-								cpu, cur_freq,
-								cur_load, rq_avg,
-								pcpu_info->
-								cur_down_rate);
-	#endif
+
 							ret = cpu_down(cpu);
 							if (!ret) {
 								online_cpus--;
@@ -866,17 +845,10 @@ static int __init alucard_hotplug_init(void)
 	int ret;
 	unsigned int cpu;
 	unsigned int hotplug_freq[NR_CPUS][2] = {
-#ifdef CONFIG_MACH_LGE
 		{0, 1497600},
 		{652800, 1190400},
 		{652800, 1190400},
 		{652800, 0}
-#else
-		{0, 1242000},
-		{810000, 1566000},
-		{918000, 1674000},
-		{1026000, 0}
-#endif
 	};
 	unsigned int hotplug_load[NR_CPUS][2] = {
 		{0, 60},
