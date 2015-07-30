@@ -1097,24 +1097,6 @@ static void delayed_work_timer_fn(unsigned long __data)
 }
 
 /**
- * queue_delayed_work - queue work on a workqueue after delay
- * @wq: workqueue to use
- * @dwork: delayable work to queue
- * @delay: number of jiffies to wait before queueing
- *
- * Returns 0 if @work was already on a queue, non-zero otherwise.
- */
-int queue_delayed_work(struct workqueue_struct *wq,
-			struct delayed_work *dwork, unsigned long delay)
-{
-	if (delay == 0)
-		return queue_work(wq, &dwork->work);
-
-	return queue_delayed_work_on(-1, wq, dwork, delay);
-}
-EXPORT_SYMBOL_GPL(queue_delayed_work);
-
-/**
  * queue_delayed_work_on - queue work on specific CPU after delay
  * @cpu: CPU number to execute work on
  * @wq: workqueue to use
@@ -1177,7 +1159,7 @@ EXPORT_SYMBOL_GPL(queue_delayed_work_on);
  *
  * Equivalent to queue_delayed_work_on() but tries to use the local CPU.
  */
-bool queue_delayed_work(struct workqueue_struct *wq,
+int queue_delayed_work(struct workqueue_struct *wq,
 			struct delayed_work *dwork, unsigned long delay)
 {
 	return queue_delayed_work_on(WORK_CPU_UNBOUND, wq, dwork, delay);
@@ -1213,7 +1195,7 @@ bool mod_delayed_work_on(int cpu, struct workqueue_struct *wq,
 	} while (unlikely(ret == -EAGAIN));
 
 	if (likely(ret >= 0)) {
-		__queue_delayed_work(cpu, wq, dwork, delay);
+		queue_delayed_work(cpu, wq, dwork, delay);
 		local_irq_restore(flags);
 	}
 
